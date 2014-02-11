@@ -1,0 +1,37 @@
+{
+  "name": "tmlib.native.js",
+  "version": "0.0.1",
+  "description": "tmlib.native.js",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "example": "examples",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/phi-jp/tmlib.native.js.git"
+  },
+  "keywords": [
+    "javascript",
+    "game"
+  ],
+  "author": "phi",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-watch": "~0.3.1",
+    "grunt-contrib-less": "~0.5.0",
+    "grunt-contrib-uglify": "~0.2.0",
+    "grunt-contrib-cssmin": "~0.5.0",
+    "grunt-contrib-htmlmin": "~0.1.1",
+    "grunt-contrib-concat": "~0.1.3",
+    "grunt-shell": "~0.2.1",
+    "grunt-contrib-copy": "~0.5.0",
+    "grunt-contrib-jade": "~0.9.1"
+  }
+}
