@@ -16,6 +16,7 @@ module.exports = function(grunt) {
 ';
     
     var target = [
+        "scripts/native.js",
         "scripts/api.js",
         "scripts/nativeaudio.js",
     ];
