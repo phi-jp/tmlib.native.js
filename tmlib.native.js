@@ -202,7 +202,7 @@ tm.native.isNative = (function() {
 
     };
 
-});
+})();
 
 /*
  * nativeaudio.js
