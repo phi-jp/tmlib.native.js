@@ -53,7 +53,7 @@
             var self = this;
             
             if (this.loopFlag == false) {
-                yyjtk.api.playSound(this.path, {
+                tm.native.api.playSound(this.path, {
                     volume: this.volume,
                     callback: function() {
                         var e = tm.event.Event("ended");
@@ -62,7 +62,7 @@
                 });
             }
             else {
-                yyjtk.api.playMusic(this.path, {
+                tm.native.api.playMusic(this.path, {
                     volume: this.volume,
                     callback: function() {
                         var e = tm.event.Event("ended");
@@ -76,10 +76,10 @@
         
         stop: function() {
             if (this.loopFlag == false) {
-                yyjtk.api.stopSound();
+                tm.native.api.stopSound();
             }
             else {
-                yyjtk.api.stopMusic();
+                tm.native.api.stopMusic();
             }
             
             return this;
