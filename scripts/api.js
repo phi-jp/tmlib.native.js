@@ -4,7 +4,7 @@
 
 ;(function() {
 
-    var PROTOCOL = "piyo://";
+    var PROTOCOL = "tmlib";
 
     var iframe = document.createElement('iframe');
     iframe.style.display = 'none';
@@ -14,37 +14,84 @@
 
     // ネイティブAPI実行キュー
     var request_queue = [];
-
-    // ネイティブAPI実行インターバル（0.1秒単位）
-    setInterval(function() {
-        if (request_queue.length == 0) return ;
-        
-        var uri = request_queue.shift();
-        
-        if (tm.native.isNative()) {
-            iframe.contentWindow.location = uri;
-        }
-        else {
-            console.log(uri);
-        }
-    }, 50);
+    var listner_queue = {};
+    var listner_counter = 0;
 
     tm.native.api = {
-
-        exec: function(uri) {
-            request_queue.push(PROTOCOL + uri);
+        loop: function() {
+            if (request_queue.length == 0) return ;
+            
+            var request = request_queue.shift();
+            
+            if (tm.native.isNative()) {
+                var uri = tm.native.api.toScheme(request.method, request.param);
+                iframe.contentWindow.location = uri;
+                console.log(uri);
+            }
+            else {
+                if (request.param.callback) {
+                    request.param.callback({
+                        request: request,
+                    });
+                }
+            }
         },
+
+        exec: function(method, param) {
+            request_queue.push({
+                method: method,
+                param: param,
+            });
+            return this;
+        },
+
+        toScheme: function(method, param) {
+            if (param) {
+                // check callback
+                if (param.callback) {
+                    param.callback = this.setCallback(param.callback);
+                }
+                else {
+                    delete param.callback;
+                }
+
+                var paramUri = tm.util.QueryString.stringify(param);
+                var uri = "{0}://{1}?{2}".format(PROTOCOL, method, paramUri);
+            }
+            else {
+                var uri = "{0}://{1}".format(PROTOCOL, method);
+            }
+
+            return uri;
+        },
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // old
+
         closeView: function() {
             this.exec("closeView");
         },
+
         playSound: function(name, param) {
             param = param || {};
 
             param.name = name;
-            param.callback = this.setCallbackFunction(param.callback);
+            param.callback = this.setCallback(param.callback);
 
             this.exec("playSound?" + tm.util.QueryString.stringify(param));
         },
+
         /**
          * サウンドを停止する
          */
@@ -55,7 +102,7 @@
             param = param || {};
 
             param.name = name;
-            param.callback = this.setCallbackFunction(param.callback);
+            param.callback = this.setCallback(param.callback);
 
             this.exec("playMusic?" + tm.util.QueryString.stringify(param));
         },
@@ -76,7 +123,7 @@
                     score: score,
                     callback: callback,
                 };
-                param.callback = this.setCallbackFunction(param.callback);
+                param.callback = this.setCallback(param.callback);
                 this.exec("sendScore?" + tm.util.QueryString.stringify(param));
             }
             else {
@@ -93,7 +140,7 @@
                     id: id,
                     callback: callback,
                 };
-                param.callback = this.setCallbackFunction(param.callback);
+                param.callback = this.setCallback(param.callback);
                 this.exec("getSelfRanking?" + tm.util.QueryString.stringify(param));
             }
             else {
@@ -156,7 +203,7 @@
 
         getLanguage: function(callback) {
             if (tm.native.isNative()) {
-                callback = this.setCallbackFunction(callback);
+                callback = this.setCallback(callback);
                 var param = {
                     callback: callback,
                 };
@@ -167,16 +214,27 @@
             }
         },
 
-        setCallbackFunction: function(callback) {
+        setCallback: function(callback) {
             if (!callback) return null;
 
-            window._nativeTempFuncCount = window._nativeTempFuncCount || 0;
-            var funcName = "_nativeTempFunc" + window._nativeTempFuncCount++;
-            window[funcName] = callback;
-            return funcName;
+            var name = 'index' + listner_counter++;
+            listner_queue[name] = callback;
+
+            return name;
         },
 
+        execCallback: function(name, arg) {
+            listner_queue[name](arg);
+            return this;
+        },
 
+        deleteCallback: function(name) {
+            delete listner_queue[name];
+            return this;
+        },
     };
 
-});
+    // ネイティブAPI実行インターバル（0.1秒単位）
+    setInterval(tm.native.api.loop, 50);
+
+})();

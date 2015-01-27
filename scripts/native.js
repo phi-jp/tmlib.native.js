@@ -6,10 +6,10 @@
 tm.native = tm.native || {};
 
 tm.native.isNative = (function() {
-    var flag = /piyokawa/i.test(navigator.userAgent);
+    var flag = /tmlib/i.test(navigator.userAgent);
 
     return function() {
-    	flag;
+    	return flag;
     }
 })();
 
