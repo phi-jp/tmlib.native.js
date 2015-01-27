@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset='UTF-8' />
+        <title>test - tmlib.native.js</title>
+    </head>
+
+    <body>
+        <br />
+        <br />
+        <br />
+        <button>openAdMob</button>
+        <button>closeAdMob</button>
+        <button>loginGameCenter</button>
+        <button>openGameCenter</button>
+        <button>reportScore</button>
+
+        <pre id='console'></pre>
+    </body>
+
+</html>
+
+<script>
+    
+window.onload = function() {
+    var buttons = document.getElementsByTagName('button');
+
+    Array.prototype.forEach.call(buttons, function(button) {
+        button.onclick = function() {
+            runScheme(button.innerHTML);
+        };
+    });
+};
+
+var runScheme = function(method) {
+    var url = 'tmlib://' + method;
+    console.log(url);
+
+    window.location.href = url;
+
+    document.getElementById('console').innerHTML += method + '\n';
+};
+
+</script>
+
+<style>
+#console {
+    box-shadow: 0px 0px 4px 0px #888;
+    padding: 10px;
+}
+</style>
