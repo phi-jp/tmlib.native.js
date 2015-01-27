@@ -4,47 +4,120 @@
     <head>
         <meta charset='UTF-8' />
         <title>test - tmlib.native.js</title>
+
+        <link rel='stylesheet' href='http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css' />
+
+        <script src="http://cdn.rawgit.com/phi-jp/tmlib.js/0.4.3/build/tmlib.js"></script>
+        <script src="../scripts/native.js"></script>
+        <script src="../scripts/api.js"></script>
+        <script src="../scripts/gamekit.js"></script>
     </head>
 
     <body>
-        <br />
-        <br />
-        <br />
-        <button>openAdMob</button>
-        <button>closeAdMob</button>
-        <button>loginGameCenter</button>
-        <button>openGameCenter</button>
-        <button>reportScore</button>
+        <div class='container'>
+            <h1>test</h1>
+            
+            <div id='test' class='row'>
+            </div>
 
-        <pre id='console'></pre>
+            <div class='row'>
+                <pre id='console'></pre>
+            </div>
+        </div>
     </body>
 
 </html>
 
 <script>
+
+var tests = [
+    {
+        namespace: 'tm.native.gamekit',
+        method: 'authenticate',
+    },
+    {
+        namespace: 'tm.native.gamekit',
+        method: 'sendScore',
+        args: [
+            'test',
+            128
+        ],
+    },
+    {
+        namespace: 'tm.native.gamekit',
+        method: 'showRanking',
+        args: [
+            'test',
+        ]
+    }
+
+    /*
+    {
+        method: 'closeAdMob',
+    },
+    {
+        method: 'loginGameCenter',
+    },
+    {
+        method: 'openGameCenter',
+    },
+    {
+        method: 'reportScore',
+        arg: {
+            score: 128,
+        }
+    },
+    */
+]
     
 window.onload = function() {
-    var buttons = document.getElementsByTagName('button');
 
-    Array.prototype.forEach.call(buttons, function(button) {
+    var testElement = document.getElementById('test');
+
+    tests.each(function(test) {
+        var button = document.createElement('button');
+        button.innerHTML = test.method;
+        button.classList.add('btn');
+        button.classList.add('btn-default');
+
         button.onclick = function() {
-            runScheme(button.innerHTML);
-        };
+            run(test);
+        }
+        testElement.appendChild(button);
     });
 };
 
-var runScheme = function(method) {
-    var url = 'tmlib://' + method;
-    console.log(url);
+var run = function(test) {
+    var np = tm.using(test.namespace);
+    var func = np[test.method];
+    var callback = function(result) {
+        var str = [result.request.method, JSON.stringify(result.request.param)].join(': ');
+        console.log(str);
+        document.getElementById('console').innerHTML += (str + '\n');
+    }
 
-    window.location.href = url;
+    if (test.args) {
+        var args = [].concat(test.args, callback)
+    }
+    else if (test.arg) {
+        var arg = {}.$extend(test.arg, {callback: callback});
+        var args = [arg];
+    }
+    else {
+        var args = [callback];
+    }
 
-    document.getElementById('console').innerHTML += method + '\n';
+    func.apply(np, args);
+
+    // console.log(uri);
 };
 
 </script>
 
 <style>
+.row {
+    margin-bottom: 15px;
+}
 #console {
     box-shadow: 0px 0px 4px 0px #888;
     padding: 10px;

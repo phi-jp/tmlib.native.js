@@ -7,6 +7,7 @@ gulp.task('default', function() {
     var targets = [
         "scripts/native.js",
         "scripts/api.js",
+        "scripts/gamekit.js",
         "scripts/nativeaudio.js",
     ];
 
